@@ -1,17 +1,80 @@
 {
   "project": "rfc-cdm-mapping",
-  "source_system": "RFC Click to Close",
-  "source_type": "Mortgage POS",
-  "destination_system": "Carrington CDM",
-  "destination_type": "SQL DB / Encompass LOS",
-  "last_updated": "2026-06-08",
-  "summary": {
-    "rfc_fields": 0,
-    "cdm_fields": 0,
-    "mapped_pairs": 0,
-    "unmapped": 0,
-    "needs_review": 0
+  "last_updated": "2026-06-11",
+  "methodology": "RFC source field → MISMO XPath (pivot) → Encompass Field ID",
+  "mismo_versions": {
+    "origination": "MISMO 3.4 (URLA/ULAD, DU/LPA casefile, UCD, ULDD)",
+    "servicing": "MISMO 3.5 (iLAD, in-house servicing boarding handoff)"
   },
-  "modules": [],
-  "mappings": []
+  "source_system": {
+    "name": "RFC Proprietary LOS",
+    "internal_name_hypothesis": "Click n Close (UNCONFIRMED — first question for RFC SME call)",
+    "type": "In-house, undocumented. No vendor LOS. No written specs or MISMO docs.",
+    "company": "Reliance First Capital (RFC)",
+    "channel": "DTC, call-center, lead-gen heavy (LendingTree top-10)"
+  },
+  "destination_system": {
+    "name": "Encompass",
+    "type": "LOS / Carrington system of record post-acquisition",
+    "note": "Carrington CDM = Encompass data model. MISMO is the translation pivot between RFC and Encompass."
+  },
+  "summary": {
+    "rfc_fields": 26,
+    "encompass_fields": 26,
+    "mapped_pairs": 0,
+    "unmapped": 26,
+    "needs_review": 0,
+    "note": "All 26 rows pre-seeded as anchors. RFC source columns TBD pending schema dump. All Status = Unmapped."
+  },
+  "modules": [
+    { "name": "Borrower", "rows": 6, "status": "pre-seeded, source TBD" },
+    { "name": "Property", "rows": 5, "status": "pre-seeded, source TBD" },
+    { "name": "Loan Terms", "rows": 8, "status": "pre-seeded, source TBD" },
+    { "name": "Dates", "rows": 2, "status": "pre-seeded, source TBD" },
+    { "name": "Income", "rows": 1, "status": "pre-seeded, source TBD — HIGH RISK: validate sum vs AUS qualifying income" },
+    { "name": "Underwriting", "rows": 2, "status": "pre-seeded, source TBD — HIGH RISK: recompute vs store-and-carry decision needed; rep-credit-score rule undefined" },
+    { "name": "Servicing", "rows": 1, "status": "pre-seeded, source TBD — MISMO 3.5 iLAD; in-house boarding handoff is a distinct mapping block" }
+  ],
+  "enum_sets": [
+    { "name": "Loan Type", "rows": 4, "source_codes": "TBD" },
+    { "name": "Loan Purpose", "rows": 3, "source_codes": "TBD", "note": "Cash-out vs rate/term may be a separate source flag" },
+    { "name": "Lien Position", "rows": 2, "source_codes": "TBD", "note": "RFC does second-lien products — SubordinateLien in scope" },
+    { "name": "Amortization", "rows": 2, "source_codes": "TBD", "note": "ARM triggers full ARM sub-mapping block — not yet built" },
+    { "name": "Occupancy", "rows": 3, "source_codes": "TBD" },
+    { "name": "Property Type", "rows": 1, "source_codes": "TBD", "note": "Full property-type domain not yet mapped" }
+  ],
+  "artifacts_outstanding": {
+    "hard_blockers": [
+      "DB schema / DDL dump (non-prod, read-only) — RFC eng/DBA",
+      "UCD XML samples (3-5 closed loans) — RFC closing/post-closing"
+    ],
+    "next_priority": [
+      "ULDD XML (if sells to GSEs) — RFC secondary/capital markets",
+      "DU and/or LPA casefile XML — RFC underwriting",
+      "URLA / 1003 export — RFC origination",
+      "Encompass field dictionary for target instance — Carrington Encompass admin"
+    ],
+    "later": [
+      "Servicing boarding / transfer file (iLAD 3.5) — RFC servicing",
+      "API contract (OpenAPI/Swagger or WSDL) — RFC eng",
+      "SME time with LOS builder/maintainer — 1-2 hrs",
+      "Live UI session trace (last resort) — Fiddler/Charles/Burp"
+    ]
+  },
+  "open_flags": [
+    "Confirm 'Click n Close' = RFC internal LOS name, and whether it is one system or a front end on something else",
+    "Confirm source DB engine (SQL Server vs Oracle) — determines catalog query to run",
+    "Define rep-credit-score selection rule before mapping that field",
+    "ARM sub-mapping block not yet built — defer until ARM loan sample arrives",
+    "iLAD 3.5 servicing block not yet expanded",
+    "Income: decide recompute vs store-and-carry for DTI",
+    "Identify doc engine (DocMagic / IDS / Docutech) before requesting payload"
+  ],
+  "files_in_repo": [
+    "data/RFC_crosswalk.csv — 26 pre-seeded rows, source columns TBD",
+    "data/RFC_enums.csv — 16 enum rows, RFC source codes TBD",
+    "data/RFC_inventory.csv — 12 artifact checklist, all outstanding",
+    "data/RFC_Encompass_Mapping_KT.md — engagement KT, methodology, stakeholder email templates",
+    "data/RFC_Encompass_MISMO_Crosswalk.xlsx — Excel version of crosswalk for stakeholder sharing"
+  ]
 }

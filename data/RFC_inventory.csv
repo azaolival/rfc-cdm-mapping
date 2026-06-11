@@ -1,0 +1,13 @@
+#,Artifact to Collect,What it gives you,Owner / Source,Format,Requested?,Received?,Status / Notes
+1,DB schema / DDL dump (non-prod replica),"The real data dictionary: every table, column, datatype, PK/FK parent paths",RFC eng / DBA,SQL DDL or INFORMATION_SCHEMA export,No,No,Read-only is sufficient
+2,Entity-relationship diagram (if any),Visual parent/child loan data structure,RFC eng,PDF/PNG/dbdiagram,No,No,Likely doesn't exist; derive from FKs if not
+3,ULDD XML sample (3-5 closed loans),GSE delivery dataset = internal->MISMO crosswalk for delivery fields,RFC secondary/capital mkts,MISMO XML,No,No,Only if they sell to Fannie/Freddie
+4,UCD XML sample (3-5 closed loans),Uniform Closing Dataset = closing-side MISMO mapping,RFC closing/post-closing,MISMO 3.x XML,No,No,Every closed loan has one
+5,DU and/or LPA casefile XML,ULAD / MISMO 3.4 mapping for app + underwriting fields,RFC underwriting,MISMO 3.4 XML,No,No,Every AUS run produces one
+6,URLA / 1003 export,ULAD mapping for the full application dataset,RFC origination,MISMO 3.4 XML / PDF,No,No,
+7,Servicing boarding / transfer file,iLAD / MISMO 3.5 handoff = your 3.5 touchpoint,RFC servicing,MISMO 3.5 / fixed-width,No,No,In-house servicing handoff
+8,Doc-engine payload (DocMagic/IDS/Docutech),Another internal->standardized field map at doc gen,RFC closing,XML/JSON,No,No,Identify which doc engine first
+9,API contract (OpenAPI/Swagger or WSDL),UI-field-to-endpoint-to-column reverse map,RFC eng,JSON/YAML/WSDL,No,No,Ask before resorting to a proxy trace
+10,Live-loan UI session trace (Fiddler/Charles/Burp),Reverse-maps UI field -> JSON path -> column when no API doc exists,You + 1 RFC user,HAR capture,No,No,Last resort; needs a screen-share volunteer
+11,SME time with LOS builder/maintainer,"Tribal knowledge: naming, quirks, derived fields",RFC eng or contracted dev shop,1-2 hrs call,No,No,Undocumented != unknown
+12,Encompass field dictionary (target instance),Authoritative target field IDs to validate every row,Carrington Encompass admin,Encompass field lookup / export,No,No,Validate every Encompass ID against this

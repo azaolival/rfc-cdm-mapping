@@ -1,0 +1,16 @@
+Field / Enum Set,RFC Source Code/Value,RFC Meaning,MISMO Enumeration,Encompass Value,Notes
+Loan Type,<TBD>,Conventional,Conventional,Conventional,
+Loan Type,<TBD>,FHA,FHA,FHA,
+Loan Type,<TBD>,VA,VA,VA,
+Loan Type,<TBD>,USDA / Rural,USDARural,USDA-RuralHousing,
+Loan Purpose,<TBD>,Purchase,Purchase,Purchase,
+Loan Purpose,<TBD>,Rate/Term Refi,Refinance,NoCash-Out Refinance,Confirm Encompass refi sub-type split
+Loan Purpose,<TBD>,Cash-Out Refi,Refinance,Cash-Out Refinance,Cash-out vs rate/term may be separate source flag
+Lien Position,<TBD>,First,FirstLien,FirstLien,
+Lien Position,<TBD>,Second,SecondLien,SubordinateLien,Reliance does second-lien products
+Amortization,<TBD>,Fixed,Fixed,Fixed,
+Amortization,<TBD>,ARM,AdjustableRate,AdjustableRate,Triggers ARM sub-mapping block
+Occupancy,<TBD>,Primary,PrimaryResidence,PrimaryResidence,
+Occupancy,<TBD>,Second Home,SecondHome,SecondHome,
+Occupancy,<TBD>,Investment,Investor,InvestmentProperty,
+Property Type,<TBD>,SFR,Detached,SingleFamily,Map full property-type domain
