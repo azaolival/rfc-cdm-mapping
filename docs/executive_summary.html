@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RFC to Encompass — Executive Summary</title>
+<style>
+  :root {
+    --bg: #0f1923;
+    --bg2: #162032;
+    --bg3: #1e2d42;
+    --border: #2a3f5a;
+    --text: #e8edf3;
+    --text2: #94a8bf;
+    --accent: #f0a500;
+    --accent2: #ffc740;
+    --green: #2dd4a0;
+    --red: #f06060;
+    --blue: #4da6ff;
+    --purple: #a78bfa;
+    --tag-bg: #1e3a5f;
+    --card-bg: #162032;
+    --warn-bg: #2a1a00;
+    --warn-border: #f0a500;
+    --risk-bg: #2a1010;
+    --risk-border: #f06060;
+    --sidebar-w: 240px;
+    --transition: 0.3s ease;
+  }
+  [data-theme="light"] {
+    --bg: #f4f6f9;
+    --bg2: #ffffff;
+    --bg3: #edf0f5;
+    --border: #d0d8e4;
+    --text: #1a2a3a;
+    --text2: #5a6e84;
+    --accent: #c07800;
+    --accent2: #e09000;
+    --green: #0d9068;
+    --red: #c83232;
+    --blue: #1a6fc4;
+    --purple: #6d4ed8;
+    --tag-bg: #dce8f5;
+    --card-bg: #ffffff;
+    --warn-bg: #fff8e6;
+    --warn-border: #c07800;
+    --risk-bg: #fff0f0;
+    --risk-border: #c83232;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: background var(--transition), color var(--transition);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    z-index: 100;
+    gap: 12px;
+    transition: background var(--transition), border-color var(--transition);
+  }
+  .header-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    flex: 1;
+  }
+  .header-title span { color: var(--accent); }
+  .status-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--warn-bg);
+    color: var(--accent);
+    border: 1px solid var(--warn-border);
+    padding: 3px 10px;
+    border-radius: 4px;
+  }
+  .theme-toggle {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: background var(--transition), border-color var(--transition);
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { background: var(--border); }
+
+  /* LAYOUT */
+  .layout {
+    display: flex;
+    padding-top: 56px;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar-w);
+    position: fixed;
+    top: 56px; bottom: 0; left: 0;
+    overflow-y: auto;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    transition: background var(--transition), border-color var(--transition);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .sidebar-label {
+    padding: 0 16px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text2);
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    line-height: 1.3;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); border-left-color: var(--border); }
+  .nav-item.active { background: var(--tag-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+  .nav-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background var(--transition);
+  }
+  .nav-item.active .nav-dot { background: var(--accent); }
+  .nav-divider { height: 1px; background: var(--border); margin: 10px 16px; }
+
+  /* MAIN */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 32px 40px 80px;
+    max-width: 860px;
+  }
+
+  /* HERO */
+  .hero {
+    margin-bottom: 32px;
+    padding: 28px 32px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--blue));
+  }
+  .hero-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .hero h1 {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.25;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  .hero-desc {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.65;
+    max-width: 620px;
+    margin-bottom: 20px;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    background: var(--bg3);
+    transition: background var(--transition);
+    white-space: nowrap;
+  }
+  .chip.orange { color: var(--accent); border-color: var(--accent); background: var(--warn-bg); }
+  .chip.blue { color: var(--blue); border-color: var(--blue); background: rgba(77,166,255,0.07); }
+  .chip.green { color: var(--green); border-color: var(--green); background: rgba(45,212,160,0.07); }
+  .chip.red { color: var(--red); border-color: var(--red); background: var(--risk-bg); }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 28px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    scroll-margin-top: 76px;
+    transition: background var(--transition), border-color var(--transition);
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .section-header:hover { background: var(--bg3); }
+  .section-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .section-icon.orange { background: var(--warn-bg); border: 1px solid var(--warn-border); }
+  .section-icon.blue { background: rgba(77,166,255,0.1); border: 1px solid rgba(77,166,255,0.3); }
+  .section-icon.green { background: rgba(45,212,160,0.1); border: 1px solid rgba(45,212,160,0.3); }
+  .section-icon.red { background: var(--risk-bg); border: 1px solid var(--risk-border); }
+  .section-icon.purple { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.3); }
+  .section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    flex: 1;
+  }
+  .section-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text2);
+    background: var(--bg3);
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .chevron {
+    font-size: 12px;
+    color: var(--text2);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .section.collapsed .chevron { transform: rotate(-90deg); }
+  .section-body {
+    padding: 20px 24px;
+  }
+  .section.collapsed .section-body { display: none; }
+  .body-text {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .body-text:last-child { margin-bottom: 0; }
+  .body-text strong { color: var(--text); font-weight: 600; }
+
+  /* FLOW DIAGRAM */
+  .flow-diagram {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 20px 0;
+    padding: 20px;
+    background: var(--bg3);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    justify-content: center;
+  }
+  .flow-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    min-width: 140px;
+    text-align: center;
+  }
+  .flow-node.source { background: rgba(167,139,250,0.12); border: 1px solid rgba(167,139,250,0.35); }
+  .flow-node.pivot { background: rgba(240,165,0,0.12); border: 2px solid var(--accent); }
+  .flow-node.dest { background: rgba(77,166,255,0.12); border: 1px solid rgba(77,166,255,0.35); }
+  .flow-node-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .flow-node.source .flow-node-label { color: var(--purple); }
+  .flow-node.pivot .flow-node-label { color: var(--accent); }
+  .flow-node.dest .flow-node-label { color: var(--blue); }
+  .flow-node-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .flow-node-sub {
+    font-size: 11px;
+    color: var(--text2);
+    line-height: 1.4;
+  }
+  .flow-arrow {
+    font-size: 22px;
+    color: var(--accent);
+    flex-shrink: 0;
+    font-weight: 300;
+  }
+  .flow-note {
+    font-size: 12px;
+    color: var(--text2);
+    text-align: center;
+    margin-top: 10px;
+    font-style: italic;
+  }
+
+  /* BLOCKER ITEMS */
+  .blocker-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+  .blocker-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    transition: background var(--transition);
+  }
+  .blocker-item.hard { border-color: rgba(240,96,96,0.4); background: rgba(240,96,96,0.05); }
+  .blocker-item.priority { border-color: rgba(240,165,0,0.4); background: rgba(240,165,0,0.05); }
+  .blocker-num {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .blocker-item.hard .blocker-num { background: rgba(240,96,96,0.15); color: var(--red); }
+  .blocker-item.priority .blocker-num { background: rgba(240,165,0,0.15); color: var(--accent); }
+  .blocker-item.standard .blocker-num { background: var(--tag-bg); color: var(--blue); }
+  .blocker-content { flex: 1; }
+  .blocker-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .blocker-desc {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+  .blocker-owner {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .blocker-item.hard .blocker-owner { background: rgba(240,96,96,0.15); color: var(--red); }
+  .blocker-item.priority .blocker-owner { background: rgba(240,165,0,0.12); color: var(--accent); }
+  .blocker-item.standard .blocker-owner { background: var(--tag-bg); color: var(--blue); }
+
+  /* ASK CARDS */
+  .ask-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+  .ask-card {
+    padding: 18px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    transition: background var(--transition);
+  }
+  .ask-num {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #0f1923;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+  .ask-content { flex: 1; }
+  .ask-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .ask-desc {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+  .ask-desc strong { color: var(--text); }
+
+  /* PROGRESS ROW */
+  .progress-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+  }
+  .check-icon {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .check-icon.done { background: rgba(45,212,160,0.15); color: var(--green); }
+  .check-icon.wip { background: rgba(240,165,0,0.15); color: var(--accent); }
+  .progress-text { font-size: 13px; color: var(--text2); flex: 1; line-height: 1.4; }
+  .progress-text strong { color: var(--text); font-weight: 600; }
+
+  /* RISK BOX */
+  .risk-box {
+    margin-top: 16px;
+    padding: 18px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--risk-border);
+    background: var(--risk-bg);
+  }
+  .risk-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+  .risk-text {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.65;
+  }
+  .risk-text strong { color: var(--text); }
+
+  /* METHODOLOGY CALLOUT */
+  .method-callout {
+    margin: 16px 0;
+    padding: 16px 18px;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+    background: var(--warn-bg);
+  }
+  .method-callout p {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.65;
+  }
+  .method-callout p strong { color: var(--accent); }
+
+  /* MISMO EXPORTS TABLE */
+  .exports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 14px 0;
+  }
+  .export-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 7px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+  }
+  .export-tag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .export-tag.blue { background: rgba(77,166,255,0.12); color: var(--blue); border: 1px solid rgba(77,166,255,0.25); }
+  .export-tag.green { background: rgba(45,212,160,0.1); color: var(--green); border: 1px solid rgba(45,212,160,0.25); }
+  .export-tag.purple { background: rgba(167,139,250,0.1); color: var(--purple); border: 1px solid rgba(167,139,250,0.25); }
+  .export-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .export-desc strong { color: var(--text); font-size: 13px; }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 40px;
+    padding: 20px 24px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 12px;
+  }
+  .footer-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .footer-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .footer-date { font-size: 12px; color: var(--text2); text-align: right; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-title">RFC to Encompass — <span>Executive Summary</span></div>
+  <div class="status-badge">Pending Leadership Approval</div>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀</button>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-label">Sections</div>
+    <a class="nav-item active" href="#situation" onclick="setActive(this)"><div class="nav-dot"></div>Situation</a>
+    <a class="nav-item" href="#finding" onclick="setActive(this)"><div class="nav-dot"></div>Core Finding</a>
+    <a class="nav-item" href="#better-path" onclick="setActive(this)"><div class="nav-dot"></div>Better Path</a>
+    <a class="nav-item" href="#blockers" onclick="setActive(this)"><div class="nav-dot"></div>What Is Blocking</a>
+    <a class="nav-item" href="#done" onclick="setActive(this)"><div class="nav-dot"></div>Work to Date</a>
+    <a class="nav-item" href="#asks" onclick="setActive(this)"><div class="nav-dot"></div>Three Asks</a>
+    <a class="nav-item" href="#risk" onclick="setActive(this)"><div class="nav-dot"></div>Risk of Status Quo</a>
+    <div class="nav-divider"></div>
+    <div class="sidebar-label">Prepared By</div>
+    <a class="nav-item" href="#footer" onclick="setActive(this)"><div class="nav-dot"></div>Aza Olivar, BSA</a>
+  </nav>
+
+  <main class="main">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-label">Executive Summary</div>
+      <h1>RFC to Encompass Data Mapping<br>Methodology Recommendation</h1>
+      <p class="hero-desc">A BSA consultant assessment of the current mapping engagement structure, what is working, what is not, and what needs to change before further mapping work proceeds. The recommendation represents the faster, cleaner, and more defensible path to a complete and auditable migration spec.</p>
+      <div class="hero-meta">
+        <span class="chip orange">Methodology Decision Needed</span>
+        <span class="chip blue">Carrington Acquisition Initiative</span>
+        <span class="chip">RFC Origination Integration</span>
+        <span class="chip">Encompass System of Record</span>
+      </div>
+    </div>
+
+    <!-- SITUATION -->
+    <div class="section" id="situation">
+      <div class="section-header" onclick="toggleSection(this.parentElement)">
+        <div class="section-icon blue">📋</div>
+        <div class="section-title">Situation</div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <p class="body-text">Carrington engaged a BSA consultant to map loan data from <strong>Reliance First Capital's (RFC)</strong> proprietary LOS to <strong>Encompass</strong> as the go-forward system of record following the acquisition (announced October 31, 2025, expected to close Q1 2026). The acquisition adds a direct-to-consumer origination channel to Carrington's existing retail, wholesale, and correspondent businesses.</p>
+        <p class="body-text">RFC is a call-center driven, DTC lender with six origination centers, over 100 licensed Mortgage Analysts, and approximately $1B per year in origination volume. They originate FHA, VA, USDA, conventional, jumbo, Non-QM, and second-lien products. Their technology is a <strong>proprietary, in-house LOS</strong> with no vendor name, no published specifications, and no written data dictionary.</p>
+        <p class="body-text">The goal is to produce a <strong>field-level mapping specification</strong> that governs how RFC's loan data moves into Encompass, covering every material field in the loan lifecycle from application through servicing.</p>
+      </div>
+    </div>
+
+    <!-- CORE FINDING -->
+    <div class="section" id="finding">
+      <div class="section-header" onclick="toggleSection(this.parentElement)">
+        <div class="section-icon orange">⚠</div>
+        <div class="section-title">Core Finding</div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <p class="body-text">After reviewing the current engagement structure, the available artifacts, and the nature of RFC's technology stack, there is a critical finding to surface before further mapping work proceeds.</p>
+        <div class="risk-box">
+          <div class="risk-label">The Problem</div>
+          <p class="risk-text">The current approach frames this engagement as a <strong>direct database-to-database mapping</strong>: match RFC SQL columns to Carrington Encompass fields. That framing is creating unnecessary difficulty and will produce lower-quality results than an alternative approach already available. RFC's LOS has no vendor documentation, no published MISMO specifications, and no validated data dictionary. The schemas provided to date are informal, inconsistently documented, and have not been confirmed against what the system actually stores and exchanges in production. A direct column-to-column mapping under these conditions means we are producing <strong>educated guesses dressed as specifications</strong>. In a regulated data migration context, that is a meaningful risk.</p>
+        </div>
+        <p class="body-text" style="margin-top:16px;">This is not a failure of the team. It is a structural issue with how the engagement was scoped relative to what artifacts exist on the RFC side. Catching and correcting this now, before significant additional work is invested, is the right call.</p>
+      </div>
+    </div>
+
+    <!-- BETTER PATH -->
+    <div class="section" id="better-path">
+      <div class="section-header" onclick="toggleSection(this.parentElement)">
+        <div class="section-icon green">✦</div>
+        <div class="section-title">A Better Path Already Exists</div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <p class="body-text">RFC cannot originate, close, or deliver loans without producing industry-standard MISMO datasets. This is not optional. Every AUS submission, every GSE delivery, every closing, and every URLA generates a MISMO XML export that maps RFC's internal fields to a known, auditable MISMO container. Those exports exist today and they are already doing the translation work we are trying to recreate manually from incomplete spreadsheets.</p>
+
+        <div class="flow-diagram">
+          <div class="flow-node source">
+            <div class="flow-node-label">Source</div>
+            <div class="flow-node-name">RFC Source Field</div>
+            <div class="flow-node-sub">Proprietary LOS<br>Undocumented</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node pivot">
+            <div class="flow-node-label">Pivot</div>
+            <div class="flow-node-name">MISMO XPath</div>
+            <div class="flow-node-sub">Industry Standard<br>Already produced by RFC</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node dest">
+            <div class="flow-node-label">Destination</div>
+            <div class="flow-node-name">Encompass Field ID</div>
+            <div class="flow-node-sub">MISMO-native<br>Fully documented</div>
+          </div>
+        </div>
+        <p class="flow-note">One mapping row per field. Three columns. Auditable, industry-standard, and defensible.</p>
+
+        <div class="method-callout">
+          <p><strong>Why this works:</strong> Encompass is MISMO-native. Every Encompass field ID has a corresponding MISMO path, and that mapping is published and maintained. RFC's MISMO exports are the spec that was never written. The UCD, ULDD, DU/LPA casefile, and URLA collectively reveal how RFC's internal data maps to MISMO containers. We extract the crosswalk from the exports rather than guessing at it from informal spreadsheets.</p>
+        </div>
+
+        <p class="body-text">The MISMO exports RFC already produces routinely:</p>
+        <div class="exports-list">
+          <div class="export-row">
+            <span class="export-tag blue">UCD XML</span>
+            <div class="export-desc"><strong>Uniform Closing Dataset</strong> — Every closed loan has one. Maps closing-side fields to MISMO containers.</div>
+          </div>
+          <div class="export-row">
+            <span class="export-tag blue">ULDD XML</span>
+            <div class="export-desc"><strong>Uniform Loan Delivery Dataset</strong> — GSE delivery dataset. Maps delivery fields for every Fannie/Freddie loan.</div>
+          </div>
+          <div class="export-row">
+            <span class="export-tag green">DU / LPA Casefile</span>
+            <div class="export-desc"><strong>AUS Casefile XML</strong> — MISMO 3.4. Every AUS submission produces one. Maps application and underwriting fields.</div>
+          </div>
+          <div class="export-row">
+            <span class="export-tag green">URLA / 1003</span>
+            <div class="export-desc"><strong>Uniform Residential Loan Application</strong> — MISMO 3.4. Maps the full application dataset.</div>
+          </div>
+          <div class="export-row">
+            <span class="export-tag purple">iLAD / Boarding File</span>
+            <div class="export-desc"><strong>MISMO 3.5</strong> — In-house servicing boarding handoff. Distinct mapping block for RFC's in-house servicing.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOCKERS -->
+    <div class="section" id="blockers">
+      <div class="section-header" onclick="toggleSection(this.parentElement)">
+        <div class="section-icon red">⛔</div>
+        <div class="section-title">What Is Blocking Progress</div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <p class="body-text">Two categories of blockers are preventing high-confidence mapping work, regardless of methodology. Items 1 and 2 are hard blockers. Nothing maps cleanly without them.</p>
+        <div class="blocker-list">
+          <div class="blocker-item hard">
+            <div class="blocker-num">1</div>
+            <div class="blocker-content">
+              <div class="blocker-title">RFC LOS Database Schema / DDL Export</div>
+              <div class="blocker-desc">Read-only access to a non-production RFC LOS database with a schema or DDL export. This is the actual data dictionary that was never written down. Every table, column, data type, and relationship lives here.</div>
+              <span class="blocker-owner">Owner: RFC Engineering / DBA Team</span>
+            </div>
+          </div>
+          <div class="blocker-item hard">
+            <div class="blocker-num">2</div>
+            <div class="blocker-content">
+              <div class="blocker-title">Sample MISMO XML Exports (3-5 Closed Loans)</div>
+              <div class="blocker-desc">UCD, ULDD, and DU/LPA casefile XML from 3 to 5 real closed loans, de-identified if needed. These files already exist and are produced routinely. They are the fastest path to an accurate mapping of RFC's internal fields.</div>
+              <span class="blocker-owner">Owner: RFC Closing / Underwriting / Secondary</span>
+            </div>
+          </div>
+          <div class="blocker-item priority">
+            <div class="blocker-num">3</div>
+            <div class="blocker-content">
+              <div class="blocker-title">RFC API Contract (WSDL or OpenAPI/Swagger)</div>
+              <div class="blocker-desc">Identifies the logical object model even without direct database access. If the LOS is SOAP-based, a WSDL is needed. If REST-based, an OpenAPI/Swagger spec. RFC engineering can confirm which applies.</div>
+              <span class="blocker-owner">Owner: RFC Engineering</span>
+            </div>
+          </div>
+          <div class="blocker-item priority">
+            <div class="blocker-num">4</div>
+            <div class="blocker-content">
+              <div class="blocker-title">1-2 Hours with the RFC LOS Builder or Maintainer</div>
+              <div class="blocker-desc">Undocumented does not mean unknown. The person who built or currently maintains the RFC LOS has the tribal knowledge needed to resolve naming conventions, derived fields, and system quirks that no document captures.</div>
+              <span class="blocker-owner">Owner: RFC Engineering or Contracted Dev Shop</span>
+            </div>
+          </div>
+          <div class="blocker-item priority">
+            <div class="blocker-num">5</div>
+            <div class="blocker-content">
+              <div class="blocker-title">Encompass Field Dictionary for the Carrington Instance</div>
+              <div class="blocker-desc">Every Encompass field ID in the mapping must be validated against the actual Carrington target instance, not generic Encompass documentation. This is a destination-side blocker owned internally by Carrington.</div>
+              <span class="blocker-owner">Owner: Carrington Encompass Administrator</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORK TO DATE -->
+    <div class="section" id="done">
+      <div class="section-header" onclick="toggleSection(this.parentElement)">
+        <div class="section-icon green">✓</div>
+        <div class="section-title">Work to Date</div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <p class="body-text">Meaningful groundwork has been completed that positions the engagement to move quickly once the blockers above are resolved.</p>
+        <div class="progress-grid">
+          <div class="progress-row">
+            <div class="check-icon done">✓</div>
+            <div class="progress-text"><strong>Methodology established.</strong> RFC source field to MISMO XPath to Encompass Field ID. One row per field, three columns, fully auditable.</div>
+          </div>
+          <div class="progress-row">
+            <div class="check-icon done">✓</div>
+            <div class="progress-text"><strong>26 anchor field rows pre-seeded</strong> across Borrower, Property, Loan Terms, Dates, Income, Underwriting, and Servicing domains. MISMO XPaths and Encompass Field IDs populated. RFC source columns pending schema dump.</div>
+          </div>
+          <div class="progress-row">
+            <div class="check-icon done">✓</div>
+            <div class="progress-text"><strong>16 enum mapping rows structured</strong> covering Loan Type, Loan Purpose, Lien Position, Amortization, Occupancy, and Property Type. RFC source codes pending.</div>
+          </div>
+          <div class="progress-row">
+            <div class="check-icon done">✓</div>
+            <div class="progress-text"><strong>12-item artifact checklist built</strong> with owners and format specifications for every document needed to complete the mapping.</div>
+          </div>
+          <div class="progress-row">
+            <div class="check-icon wip">⟳</div>
+            <div class="progress-text"><strong>Shared mapping and tracking tool in development.</strong> A Vercel-hosted UI that allows both Carrington and RFC stakeholders to view mapping state, confidence scores, and blocked items in a shared environment without requiring either party to access the other's internal project management tools.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THREE ASKS -->
+    <div class="section" id="asks">
+      <div class="section-header" onclick="toggleSection(this.parentElement)">
+        <div class="section-icon orange">◈</div>
+        <div class="section-title">Three Asks from Leadership</div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <p class="body-text">Three approvals will unlock the engagement and set it on the correct track to produce a complete, high-confidence mapping specification.</p>
+        <div class="ask-grid">
+          <div class="ask-card">
+            <div class="ask-num">1</div>
+            <div class="ask-content">
+              <div class="ask-title">Endorse the MISMO-Pivot Methodology</div>
+              <div class="ask-desc">Approve <strong>RFC source field to MISMO XPath to Encompass Field ID</strong> as the official mapping architecture for this engagement. This is the correct approach for an undocumented source system against a MISMO-native target. It produces a more auditable, industry-standard, and defensible deliverable than a direct DB-to-DB column match.</div>
+            </div>
+          </div>
+          <div class="ask-card">
+            <div class="ask-num">2</div>
+            <div class="ask-content">
+              <div class="ask-title">Assign Artifact Owners and Set a Delivery Deadline</div>
+              <div class="ask-desc">The <strong>five items listed in the blockers section</strong> each have a named owner. Leadership needs to assign accountability and a delivery date. The DDL schema dump and MISMO XML samples from RFC are on the critical path. Without them, confidence in the mapping output cannot exceed medium for most field rows.</div>
+            </div>
+          </div>
+          <div class="ask-card">
+            <div class="ask-num">3</div>
+            <div class="ask-content">
+              <div class="ask-title">Approve the Shared Mapping and Tracking Tool</div>
+              <div class="ask-desc">RFC cannot access Carrington's ADO or JIRA. Carrington cannot access RFC's internal tools. The current email and spreadsheet exchange is producing slow and difficult-to-audit results. A <strong>shared, always-available Vercel URL</strong> will serve as the neutral collaboration environment for both parties, replacing the email back-and-forth with a real-time, visible mapping and action-item board accessible to all stakeholders at any time.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RISK OF STATUS QUO -->
+    <div class="section" id="risk">
+      <div class="section-header" onclick="toggleSection(this.parentElement)">
+        <div class="section-icon red">⚡</div>
+        <div class="section-title">Risk of the Status Quo</div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <p class="body-text">Continuing the engagement on the current direct DB-to-DB path without the source artifacts and without methodology alignment carries three compounding risks.</p>
+        <div class="risk-box">
+          <div class="risk-label">Timeline Risk</div>
+          <p class="risk-text">Mapping without the DDL and MISMO samples requires validating every field by hand against inconsistent documentation. The output takes significantly longer to produce and still requires a re-validation pass once the real artifacts arrive.</p>
+        </div>
+        <div class="risk-box" style="margin-top:10px;">
+          <div class="risk-label">Quality Risk</div>
+          <p class="risk-text"><strong>Field mappings produced without source artifact validation carry low to medium confidence at best.</strong> In a regulated data migration, low-confidence rows that are treated as final specs create downstream errors that surface during UAT, parallel testing, or post-go-live. At that stage, the cost of a correction is substantially higher than catching it now.</p>
+        </div>
+        <div class="risk-box" style="margin-top:10px;">
+          <div class="risk-label">Audit and Accountability Risk</div>
+          <p class="risk-text">Without a shared, neutral tracking environment, blocked items, ownership disputes, and scope gaps live in email chains that are difficult to audit after the fact. When something goes wrong in a migration, the audit trail matters. The current workflow does not produce one.</p>
+        </div>
+        <p class="body-text" style="margin-top:16px;">Catching and correcting the approach now, before significant additional work is invested, is the right call. The groundwork completed to date positions the engagement to move quickly once these three approvals are in place.</p>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer" id="footer">
+      <div>
+        <div class="footer-name">Aza Olivar</div>
+        <div class="footer-sub">BSA Consultant — RFC to Encompass Data Mapping</div>
+      </div>
+      <div class="footer-date">
+        <div>June 11, 2026</div>
+        <div style="margin-top:4px;color:var(--blue);font-size:11px;">Available to discuss at any time</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.querySelector('.theme-toggle').textContent = isDark ? '☾' : '☀';
+    localStorage.setItem('rfc-exec-theme', isDark ? 'light' : 'dark');
+  }
+
+  function toggleSection(section) {
+    section.classList.toggle('collapsed');
+  }
+
+  function setActive(el) {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // Restore theme
+  const saved = localStorage.getItem('rfc-exec-theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    document.querySelector('.theme-toggle').textContent = saved === 'light' ? '☾' : '☀';
+  }
+
+  // Active nav on scroll
+  const sections = document.querySelectorAll('.section, .footer');
+  const navItems = document.querySelectorAll('.nav-item');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 90) current = s.id;
+    });
+    navItems.forEach(n => {
+      n.classList.remove('active');
+      if (n.getAttribute('href') === '#' + current) n.classList.add('active');
+    });
+  }, { passive: true });
+</script>
+</body>
+</html>
